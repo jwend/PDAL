@@ -82,6 +82,7 @@ void MergeKernel::validateSwitches()
 
 int MergeKernel::execute()
 {
+
     PointTable table;
 
     MergeFilter filter;

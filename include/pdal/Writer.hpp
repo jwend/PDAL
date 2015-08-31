@@ -75,9 +75,12 @@ protected:
 private:
     virtual PointViewSet run(PointViewPtr view)
     {
+        log()->setLeader("Writer::run");
+        log()->get(LogLevel::Debug) << "called, class " <<  this->classname() << std::endl;
         PointViewSet viewSet;
         write(view);
         viewSet.insert(view);
+        log()->get(LogLevel::Debug) << "complete, class " <<  this->classname() << std::endl;
         return viewSet;
     }
     virtual void writerProcessOptions(const Options& options);

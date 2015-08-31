@@ -97,11 +97,14 @@ private:
 
     virtual void write(const PointViewPtr view) final
     {
+        log()->setLeader("FlexWriter::write");
+        log()->get(LogLevel::Debug) << "called, class " <<  this->classname() << std::endl;
         if (m_hashPos != std::string::npos)
             readyFile(generateFilename());
         writeView(view);
         if (m_hashPos != std::string::npos)
             doneFile();
+        log()->get(LogLevel::Debug) << "complete, class " <<  this->classname() << std::endl;
     }
 
     virtual void done(PointTableRef table) final

@@ -72,6 +72,7 @@ public:
     LasWriter();
 
     Options getDefaultOptions();
+    virtual const char* classname() { return "LasWriter";}
 
 protected:
     void prepOutput(std::ostream *out);

@@ -51,6 +51,7 @@ public:
     static void * create();
     static int32_t destroy(void *);
     std::string getName() const;
+    virtual const char* classname() { return "MergeFilter";}
 
 private:
     PointViewPtr m_view;

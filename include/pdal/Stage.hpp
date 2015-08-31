@@ -132,6 +132,8 @@ public:
     void setUserCallback(UserCallback* userCallback)
         { m_callback.reset(userCallback); }
 
+    virtual const char *classname() { return "Stage";}
+
 protected:
     std::unique_ptr<UserCallback> m_callback;
     Options m_options;

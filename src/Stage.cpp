@@ -73,6 +73,9 @@ void Stage::Construct()
 
 void Stage::prepare(PointTableRef table)
 {
+
+
+
     for (size_t i = 0; i < m_inputs.size(); ++i)
     {
         Stage *prev = m_inputs[i];
@@ -84,22 +87,38 @@ void Stage::prepare(PointTableRef table)
     initialize();
     addDimensions(table.layout());
     prepared(table);
+
 }
+
 
 
 PointViewSet Stage::execute(PointTableRef table)
 {
+
+
+
+    //printf("called %s\n", this->classname());
+    log()->setLevel(LogLevel::Enum::Debug);
+
+    std::string cn(this->classname());
+    log()->setLeader(cn + " Stage::execute");
+    log()->get(LogLevel::Debug) << "Called by class " << std::endl;
+
     table.layout()->finalize();
 
     PointViewSet views;
     if (m_inputs.empty())
     {
+        log()->get(LogLevel::Debug) << "if block, class" << std::endl;
         views.insert(PointViewPtr(new PointView(table)));
     }
     else
     {
         for (size_t i = 0; i < m_inputs.size(); ++i)
         {
+            log()->get(LogLevel::Debug) << "block, class"
+                    << "input number "<< i << std::endl;
+            log()->get(LogLevel::Debug) << "if block, class" << std::endl;
             Stage *prev = m_inputs[i];
             PointViewSet temp = prev->execute(table);
             views.insert(temp.begin(), temp.end());
@@ -112,12 +131,14 @@ PointViewSet Stage::execute(PointTableRef table)
     ready(table);
     for (auto const& it : views)
     {
+        log()->get(LogLevel::Debug) << "run, class" << std::endl;
         StageRunnerPtr runner(new StageRunner(this, it));
         runners.push_back(runner);
         runner->run();
     }
     for (auto const& it : runners)
     {
+        log()->get(LogLevel::Debug) << "wait, class" << std::endl;
         StageRunnerPtr runner(it);
         PointViewSet temp = runner->wait();
         outViews.insert(temp.begin(), temp.end());
@@ -136,10 +157,18 @@ void Stage::l_initialize(PointTableRef table)
 
 void Stage::l_processOptions(const Options& options)
 {
+
+    //printf("l_processOptions called %s\n", this->classname());
+
+
     m_debug = options.getValueOrDefault<bool>("debug", false);
     m_verbose = options.getValueOrDefault<uint32_t>("verbose", 0);
+
+    //printf("l_processOptions called %s, verbose level %i\n", this->classname(), m_verbose);
+
     if (m_debug && !m_verbose)
         m_verbose = 1;
+    // jdw, ???, this appears above verbatim
     if (m_debug && !m_verbose)
         m_verbose = 1;
 
@@ -148,19 +177,31 @@ void Stage::l_processOptions(const Options& options)
         std::string logname =
             options.getValueOrDefault<std::string>("log", "stdlog");
         m_log = std::shared_ptr<pdal::Log>(new Log(getName(), logname));
+        //printf("stdlog created %s\n", this->classname());
     }
     else
     {
         if (options.hasOption("log"))
         {
+            //printf("log if %s\n", this->classname());
             std::string logname = options.getValueOrThrow<std::string>("log");
             m_log.reset(new Log(getName(), logname));
+
+
         }
         else
         {
+            //printf("log else %s\n", this->classname());
             // We know we're not empty at this point
             std::ostream* v = m_inputs[0]->log()->getLogStream();
             m_log.reset(new Log(getName(), v));
+            //jdw, added next line to preserve log level
+            //m_log->setLevel(m_inputs[0]->log()->getLevel());
+            //log()->get(LogLevel::Debug) << "Called after creation " <<  this->classname() << std::endl;
+
+            //m_inputs[0]->log()->get(LogLevel::Debug) << "Called after creation " <<  this->classname() << std::endl;
+
+
         }
     }
     m_log->setLevel((LogLevel::Enum)m_verbose);

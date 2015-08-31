@@ -73,6 +73,7 @@ public:
         { return m_lasHeader; }
     point_count_t getNumPoints() const
         { return m_lasHeader.pointCount(); }
+    virtual const char* classname() { return "LasReader";}
 
 protected:
     virtual std::istream *createStream()

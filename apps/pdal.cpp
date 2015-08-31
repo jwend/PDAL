@@ -43,6 +43,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <mpi.h>
 
 using namespace pdal;
 
@@ -193,6 +194,25 @@ void outputOptions()
 
 int main(int argc, char* argv[])
 {
+
+
+
+    int myid, numprocs;
+    int tag,source,destination,count;
+    int buffer;
+    MPI_Status status;
+    MPI_Request request;
+
+    MPI_Init(&argc,&argv);
+    MPI_Comm_size(MPI_COMM_WORLD,&numprocs);
+    MPI_Comm_rank(MPI_COMM_WORLD,&myid);
+
+    std::cout << "Rank : " << myid << std::endl;
+    std::cout  << "Processes : " << numprocs << std::endl;
+
+
+
+
     // No arguments, print basic usage, plugins will be loaded
     if (argc < 2)
     {
@@ -243,7 +263,9 @@ int main(int argc, char* argv[])
         int count(argc - 1); // remove the 1st argument
         const char** args = const_cast<const char**>(&argv[1]);
         std::unique_ptr<Kernel> app = f.createKernel(fullname);
-        return app->run(count, args, command);
+        int rtn = app->run(count, args, command);
+        MPI_Finalize();
+        return rtn;
     }
 
     // Otherwise, process the remaining args to see if they are supported
@@ -329,6 +351,7 @@ int main(int argc, char* argv[])
     if (!isValidKernel)
         std::cerr << "Command '" << command <<"' not recognized" << std::endl << std::endl;
     outputHelp();
+
     return 1;
 }
 

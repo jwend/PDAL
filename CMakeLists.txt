@@ -140,8 +140,10 @@ option(BUILD_PLUGIN_PCL "Choose if PCL support should be built" FALSE)
 add_feature_info("PCL plugin" BUILD_PLUGIN_PCL
     "provides PCL-based readers, writers, filters, and kernels")
 
+#jdw, disable postgresql
 find_package(PostgreSQL QUIET)
-option(BUILD_PLUGIN_PGPOINTCLOUD "Choose if PostgreSQL PointCloud support should be built" ${POSTGRESQL_FOUND})
+#option(BUILD_PLUGIN_PGPOINTCLOUD "Choose if PostgreSQL PointCloud support should be built" ${POSTGRESQL_FOUND})
+option(BUILD_PLUGIN_PGPOINTCLOUD "Choose if PostgreSQL PointCloud support should be built" FALSE)
 add_feature_info("PostgreSQL PointCloud plugin" BUILD_PLUGIN_PGPOINTCLOUD
     "read/write PostgreSQL PointCloud objects")
 
@@ -156,7 +158,7 @@ add_feature_info("RiVLib plugin" BUILD_PLUGIN_RIVLIB
 option(BUILD_PLUGIN_PYTHON "Choose if Python support should be built" FALSE)
 add_feature_info("Python plugin" BUILD_PLUGIN_PYTHON
     "add features that depend on python")
-
+#jdw, disable tests
 option(WITH_TESTS "Choose if PDAL unit tests should be built" TRUE)
 add_feature_info("Unit tests" WITH_TESTS "PDAL unit tests")
 
@@ -191,10 +193,12 @@ option(ENABLE_CTEST "Enable CTest to support submissions of results to CDash at 
 
 set(PDAL_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 
+
 #------------------------------------------------------------------------------
 #  Dependencies.
 #------------------------------------------------------------------------------
 
+include(${PDAL_CMAKE_DIR}/mpi.cmake)
 include(${PDAL_CMAKE_DIR}/boost.cmake)
 include(${PDAL_CMAKE_DIR}/gdal.cmake)
 include(${PDAL_CMAKE_DIR}/geos.cmake)  # Optional

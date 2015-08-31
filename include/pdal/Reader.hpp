@@ -64,7 +64,10 @@ private:
         PointViewSet viewSet;
 
         view->clearTemps();
+        log()->setLeader("Reader::run");
+        log()->get(LogLevel::Debug) << "read called by class " <<  this->classname() << std::endl;
         read(view, m_count);
+        log()->get(LogLevel::Debug) << "read finished by class " <<  this->classname() << std::endl;
         viewSet.insert(view);
         return viewSet;
     }
